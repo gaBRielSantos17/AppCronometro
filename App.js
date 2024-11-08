@@ -3,36 +3,36 @@ import { StatusBar } from 'expo-status-bar';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
 export default function App() {
-  const [tempo, setTempo] = useState(0);
-  const [ultimoTempo, setUltimoTempo] = useState(0);
-  const [estaRodando, setEstaRodando] = useState(false);
-  const [idIntervalo, setIdIntervalo] = useState(null);
+  const [tempoAtual, setTempoAtual] = useState(0);
+  const [tempoAnterior, setTempoAnterior] = useState(0);
+  const [cronometroAtivo, setCronometroAtivo] = useState(false);
+  const [intervaloId, setIntervaloId] = useState(null);
 
   const alternarCronometro = () => {
-    if (estaRodando) {
-      clearInterval(idIntervalo);
-      setUltimoTempo(tempo);
-      setEstaRodando(false);
+    if (cronometroAtivo) {
+      clearInterval(intervaloId);
+      setTempoAnterior(tempoAtual);
+      setCronometroAtivo(false);
     } else {
       const id = setInterval(() => {
-        setTempo((tempoAnterior) => tempoAnterior + 100);
+        setTempoAtual((tempoPrevio) => tempoPrevio + 100);
       }, 100);
-      setIdIntervalo(id);
-      setEstaRodando(true);
+      setIntervaloId(id);
+      setCronometroAtivo(true);
     }
   };
 
   const reiniciarCronometro = () => {
-    clearInterval(idIntervalo);
-    setTempo(0);
-    setEstaRodando(false);
+    clearInterval(intervaloId);
+    setTempoAtual(0);
+    setCronometroAtivo(false);
   };
 
   useEffect(() => {
     return () => {
-      clearInterval(idIntervalo);
+      clearInterval(intervaloId);
     };
-  }, [idIntervalo]);
+  }, [intervaloId]);
 
   const formatarTempo = (tempo) => {
     const segundos = Math.floor(tempo / 1000);
@@ -46,11 +46,11 @@ export default function App() {
         source={require('./assets/cronometro.png')}
         style={styles.img}
       />
-      <Text style={styles.timeText}>{formatarTempo(tempo)}</Text>
-      <View style={styles.buttonsContainer}>
+      <Text style={styles.tempoTexto}>{formatarTempo(tempoAtual)}</Text>
+      <View style={styles.botoesContainer}>
         <TouchableOpacity style={styles.botao} onPress={alternarCronometro}>
           <View style={styles.btnArea}>
-            <Text style={styles.btnTexto}>{estaRodando ? 'Pausar' : 'Iniciar'}</Text>
+            <Text style={styles.btnTexto}>{cronometroAtivo ? 'Pausar' : 'Iniciar'}</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.botao} onPress={reiniciarCronometro}>
@@ -59,8 +59,8 @@ export default function App() {
           </View>
         </TouchableOpacity>
       </View>
-      <Text style={styles.lastTimeText}>
-        Último tempo: {formatarTempo(ultimoTempo)}s
+      <Text style={styles.ultimoTempoTexto}>
+        Último tempo: {formatarTempo(tempoAnterior)}s
       </Text>
       <StatusBar style="auto" />
     </View>
@@ -77,14 +77,14 @@ const styles = StyleSheet.create({
   img: {
     marginBottom: 30,
   },
-  timeText: {
+  tempoTexto: {
     fontSize: 48,
     fontWeight: 'bold',
     color: '#333',
-    position:'absolute',
+    position: 'absolute',
     top: 330,
   },
-  buttonsContainer: {
+  botoesContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginBottom: 20,
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#dd7b22',
   },
-  lastTimeText: {
+  ultimoTempoTexto: {
     fontSize: 16,
     color: '#333',
     marginTop: 20,
