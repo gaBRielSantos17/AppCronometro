@@ -8,32 +8,34 @@ export default function App() {
   const [cronometroAtivo, setCronometroAtivo] = useState(false);
   const [intervaloId, setIntervaloId] = useState(null);
 
+  // Função para iniciar ou pausar o cronômetro
   const alternarCronometro = () => {
     if (cronometroAtivo) {
       clearInterval(intervaloId);
       setTempoAnterior(tempoAtual);
       setCronometroAtivo(false);
     } else {
-      const id = setInterval(() => {
-        setTempoAtual((tempoPrevio) => tempoPrevio + 100);
+      const novoIntervalo = setInterval(() => {
+        setTempoAtual((tempoAtual) => tempoAtual + 100);
       }, 100);
-      setIntervaloId(id);
+      setIntervaloId(novoIntervalo);
       setCronometroAtivo(true);
     }
   };
 
+  // Função para reiniciar o cronômetro
   const reiniciarCronometro = () => {
     clearInterval(intervaloId);
     setTempoAtual(0);
     setCronometroAtivo(false);
   };
 
+  // Limpa o intervalo ao desmontar o componente
   useEffect(() => {
-    return () => {
-      clearInterval(intervaloId);
-    };
+    return () => clearInterval(intervaloId);
   }, [intervaloId]);
 
+  // Formata o tempo em segundos e centésimos
   const formatarTempo = (tempo) => {
     const segundos = Math.floor(tempo / 1000);
     const centesimos = Math.floor((tempo % 1000) / 100);
@@ -42,10 +44,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require('./assets/cronometro.png')}
-        style={styles.img}
-      />
+      <Image source={require('./assets/cronometro.png')} style={styles.img} />
       <Text style={styles.tempoTexto}>{formatarTempo(tempoAtual)}</Text>
       <View style={styles.botoesContainer}>
         <TouchableOpacity style={styles.botao} onPress={alternarCronometro}>
@@ -67,6 +66,7 @@ export default function App() {
   );
 }
 
+// Estilos da aplicação
 const styles = StyleSheet.create({
   container: {
     flex: 1,
